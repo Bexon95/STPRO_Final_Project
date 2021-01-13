@@ -5,17 +5,14 @@ class Paper {
     String title;
     Date publicationDate;
     int pages;
-    int reference;
 }
 
 class Date {
-    int y;
-    int m;
-    int d;
+    int y, m, d;
 }
 
 class PaperDB {
-
+    PaperDB db[];
 }
 
 public class PaperManager {
@@ -27,8 +24,20 @@ public class PaperManager {
         System.out.println("Choose what you want to do:");
         menu();
 
-        
+    }
 
+    public static void add (PaperDB db, Paper p) {
+        PaperDB paperDB[] = new PaperDB[0];
+    }
+
+    public static void createPaper(String author, String title, int y, int m, int d, int pages) {
+        Paper p = new Paper();
+        p.author = author;
+        p.title = title;
+        p.publicationDate.y = y;
+        p.publicationDate.m = m;
+        p.publicationDate.d = d;
+        p.pages = pages;
     }
 
     public static void menu() {
@@ -69,7 +78,7 @@ public class PaperManager {
 
         }else{
             System.err.println("You should not see this error message. Please contact the administrator!");
-
+            System.exit(0);
         }
 
     }
