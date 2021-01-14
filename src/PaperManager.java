@@ -12,7 +12,7 @@ class Date {
 }
 
 class PaperDB {
-    PaperDB db[];
+    PaperDB paperDB[] = new PaperDB[0];
 }
 
 public class PaperManager {
@@ -26,8 +26,8 @@ public class PaperManager {
 
     }
 
-    public static void add (PaperDB db, Paper p) {
-        PaperDB paperDB[] = new PaperDB[0];
+    public static void add (PaperDB paperDB, Paper p) {
+        PaperDB temp[] = new PaperDB[paperDB.length];
     }
 
     public static void createPaper(String author, String title, int y, int m, int d, int pages) {
