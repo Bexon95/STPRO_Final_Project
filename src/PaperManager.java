@@ -8,7 +8,7 @@ class Paper {
 }
 
 class Date {
-    int y, m, d;
+    int y, m, d; //Test
 }
 
 class PaperDB {
