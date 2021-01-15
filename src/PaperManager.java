@@ -1,4 +1,3 @@
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 class Paper {
@@ -25,6 +24,15 @@ public class PaperManager {
 
         System.out.println("Welcome to the Literature Management Tool!");
         System.out.println("Choose what you want to do:");
+
+        add(db, createPaper("Brunnbauer", "b-title", 2014, 5, 30, 2));
+        add(db, createPaper("Cerny", "a-title", 2020, 3, 13, 3));
+        add(db, createPaper("Demetz", "r-title", 1990, 1, 7, 88));
+        add(db, createPaper("Hösel", "R-title", 1999, 12, 31, 2));
+        add(db, createPaper("Mandl", "g-title", 2018, 7, 6, 5));
+        add(db, createPaper("Satek", "z-title", 2004, 8, 27, 12));
+        add(db, createPaper("Brunnbauer", "l-title", 2004, 8, 17, 2));
+
         while (true) {
             menu(db);
             System.out.println();
@@ -55,6 +63,7 @@ public class PaperManager {
 
         } else if (selection == 2) {
             System.out.println("2 - delete an entry:");
+            deletePaper(db);
 
         } else if (selection == 3) {
             System.out.println("3 - display publications:");
@@ -143,7 +152,7 @@ public class PaperManager {
         if (m == 2 && isLeapYear == true) {
             if (d < 1 || d > 29)
                 return false;
-        } else if (m == 2 && isLeapYear == false) {
+        } else if (m == 2) {
             if (d < 1 || d > 28)
                 return false;
             //check other months
@@ -186,7 +195,32 @@ public class PaperManager {
         db.free++;
     }
 
+    private static void deletePaper(PaperDB db) {
+        System.out.println("Which entry would you like to delete? ");
+        int idx = sc.nextInt();
+        while(idx>=db.free){
+            System.out.println("There is no paper at that location.!");
+            System.out.printf("Please enter a number between 0 and %d\n", db.free-1);
+            idx = sc.nextInt();
+        }
+        int i=0;
+        while(db.paperDB[i] != null){
+            if(idx<=i){
+                db.paperDB[i] = db.paperDB[i+1];
+                db.paperDB[i+1] = null;
+            }
+            i++;
+        }
+        db.free--; //one free space is added back
+    }
+
     public static void printPaperLine(PaperDB db, int idx) {
+        while(idx>=db.free){
+            System.out.println("There is no paper at that location.!");
+            System.out.printf("Please enter a number between 0 and %d\n", db.free-1);
+            idx = sc.nextInt();
+        }
+
         System.out.printf("%-30.30s - %-30.30s - %4d.%02d.%02d %d\n", db.paperDB[idx].author,
                 db.paperDB[idx].title,
                 db.paperDB[idx].publicationDate.y,
@@ -197,11 +231,18 @@ public class PaperManager {
     }
 
     public static void printPaperShort(PaperDB db, int idx) {
+        if(db.paperDB[idx]==null) {
+            System.out.println("There is no paper at that location!");
+            return;
+        }
 
     }
 
     public static void printPaperDetail(PaperDB db, int idx) {
-
+        if(db.paperDB[idx]==null) {
+            System.out.println("There is no paper at that location!");
+            return;
+        }
     }
 
 }
