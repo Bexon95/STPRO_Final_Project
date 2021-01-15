@@ -4,7 +4,7 @@ import java.util.Scanner;
 class Paper {
     String author;
     String title;
-    Date publicationDate;
+    Date publicationDate = new Date();
     int pages;
 }
 
@@ -25,112 +25,10 @@ public class PaperManager {
 
         System.out.println("Welcome to the Literature Management Tool!");
         System.out.println("Choose what you want to do:");
-        menu(db);
-
-    }
-
-    public static boolean checkDate(int y, int m, int d) {
-        boolean isLeapYear = false;
-
-        //check if year is correct
-        if (y < 1665 || y > 2021) {
-            /*
-            Fun fact: the first published paper ever was from January 1665 and was called "Journal des sçavans".
-            That is why no year before that could be correct.
-
-            I also assume this program will not be used after this current year (2021), so no future papers
-            can be saved with this program.
-             */
-            System.out.println("You're either a time traveler or put in the wrong year, try again please!");
-            return false;
+        while (true) {
+            menu(db);
+            System.out.println();
         }
-
-        //check if year is a leap year
-        if ((y % 4) == 0) {
-            isLeapYear = true;
-        }
-        if ((y % 100) == 0) {
-            isLeapYear = false;
-        }
-        if ((y % 400) == 0) {
-            isLeapYear = true;
-        }
-
-        //check if month is correct
-        if (m < 1 || m > 12)
-            return false;
-
-        //check days for February
-        if (m == 2 && isLeapYear == true) {
-            if (d < 1 || d > 29)
-                return false;
-        } else if (m == 2 && isLeapYear == false) {
-            if (d < 1 || d > 28)
-                return false;
-            //check other months
-        } else if (m == 4 || m == 6 || m == 8 || m == 10 || m == 12) {
-            if (d < 1 || d > 30)
-                return false;
-        } else if (m == 1 || m == 3 || m == 5 || m == 7 || m == 9 || m == 11) {
-            if (d < 1 || d > 31)
-                return false;
-        }
-        //IntelliJ does not want an "else{return true}
-        return true;
-    }
-
-    public static void scanPaper(PaperDB db) {
-        boolean isDateCorrect = false;
-        System.out.println("Please enter the author of the paper:");
-        String author = sc.next();
-        System.out.println("Please enter the title of the paper:");
-        String title = sc.next();
-
-        //put date in and check
-        //compiler doesn't like uninitialized variables, even if they will be further down
-        int y = 1970;
-        int m = 1;
-        int d = 1;
-        while (isDateCorrect == false) {
-            System.out.println("Please enter the publication year:");
-            y = sc.nextInt();
-            System.out.println("Please enter the publication month:");
-            m = sc.nextInt();
-            System.out.println("Please enter the publication day:");
-            d = sc.nextInt();
-            isDateCorrect = checkDate(y, m, d);
-        }
-
-        System.out.println("Please enter the amount of pages of the paper:");
-        int pages = sc.nextInt();
-
-        add(db, createPaper(author, title, y, m, d, pages));
-    }
-
-    public static void add(PaperDB db, Paper p) {
-        if (db.free == db.paperDB.length) {
-            Paper temp[] = new Paper[db.paperDB.length + 10];
-            for (int i = 0; i < temp.length; i++) {
-                temp[i] = db.paperDB[i];
-            }
-            temp[db.free] = p;
-            db.paperDB = temp;
-
-        }
-        db.paperDB[db.free] = p;
-        db.free++;
-    }
-
-    public static Paper createPaper(String author, String title, int y, int m, int d, int pages) {
-        Paper p = new Paper();
-        p.author = author;
-        p.title = title;
-        p.publicationDate.y = y;
-        p.publicationDate.m = m;
-        p.publicationDate.d = d;
-        p.pages = pages;
-
-        return p;
     }
 
     public static void menu(PaperDB db) {
@@ -160,6 +58,8 @@ public class PaperManager {
 
         } else if (selection == 3) {
             System.out.println("3 - display publications:");
+            printPaperLine(db, 0);
+            printPaperLine(db, 1);
 
         } else if (selection == 4) {
             System.out.println("4 - link a reference:");
@@ -177,5 +77,131 @@ public class PaperManager {
 
     }
 
+    public static void scanPaper(PaperDB db) {
+        boolean isDateCorrect = false;
+        sc.nextLine(); //it catches the newline (\n) of me pressing "Enter".
+        System.out.println("Please enter the author of the paper:");
+        String author = sc.nextLine();
+        System.out.println("Please enter the title of the paper:");
+        String title = sc.nextLine();
+
+        //put date in and check
+        //compiler doesn't like uninitialized variables, even if they will be further down
+        int y = 1970;
+        int m = 1;
+        int d = 1;
+        while (isDateCorrect == false) {
+            System.out.println("Please enter the publication year:");
+            y = sc.nextInt();
+            System.out.println("Please enter the publication month:");
+            m = sc.nextInt();
+            System.out.println("Please enter the publication day:");
+            d = sc.nextInt();
+            isDateCorrect = checkDate(y, m, d);
+            if (isDateCorrect == false)
+                System.out.println("The Date you entered seems to be incorrect, please try again:");
+        }
+
+        System.out.println("Please enter the amount of pages of the paper:");
+        int pages = sc.nextInt();
+
+        add(db, createPaper(author, title, y, m, d, pages));
+    }
+
+    public static boolean checkDate(int y, int m, int d) {
+        boolean isLeapYear = false;
+
+        //check if year is correct
+        if (y < 1665 || y > 2021) {
+            /*
+            Fun fact: the first published paper ever was from January 1665 and was called "Journal des sçavans".
+            That is why no year before that could be correct.
+
+            I also assume this program will not be used after this current year (2021), so no future papers
+            can be saved with this program.
+             */
+            System.out.println("You're either a time traveler or entered the wrong year, try again please!");
+            return false;
+        }
+
+        //check if year is a leap year
+        if ((y % 4) == 0) {
+            isLeapYear = true;
+        }
+        if ((y % 100) == 0) {
+            isLeapYear = false;
+        }
+        if ((y % 400) == 0) {
+            isLeapYear = true;
+        }
+
+        //check if month is correct
+        if (m < 1 || m > 12)
+            return false;
+
+        //check days for February
+        if (m == 2 && isLeapYear == true) {
+            if (d < 1 || d > 29)
+                return false;
+        } else if (m == 2 && isLeapYear == false) {
+            if (d < 1 || d > 28)
+                return false;
+            //check other months
+        } else if (m == 4 || m == 6 || m == 9 || m == 11) {
+            if (d < 1 || d > 30)
+                return false;
+        } else if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) {
+            if (d < 1 || d > 31)
+                return false;
+        }
+        //IntelliJ does not want an "else{return true}
+        return true;
+    }
+
+    public static Paper createPaper(String author, String title, int y, int m, int d, int pages) {
+        Paper p = new Paper();
+        p.author = author;
+        p.title = title;
+        p.publicationDate.y = y;
+        p.publicationDate.m = m;
+        p.publicationDate.d = d;
+        p.pages = pages;
+
+        System.out.println("Paper successfully created!\n");
+
+        return p;
+    }
+
+    public static void add(PaperDB db, Paper p) {
+        if (db.free == db.paperDB.length) {
+            Paper temp[] = new Paper[db.paperDB.length + 10];
+            for (int i = 0; i < temp.length; i++) {
+                temp[i] = db.paperDB[i];
+            }
+            temp[db.free] = p;
+            db.paperDB = temp;
+
+        }
+        db.paperDB[db.free] = p;
+        db.free++;
+    }
+
+    public static void printPaperLine(PaperDB db, int idx) {
+        System.out.printf("%-30.30s - %-30.30s - %4d.%02d.%02d %d\n", db.paperDB[idx].author,
+                db.paperDB[idx].title,
+                db.paperDB[idx].publicationDate.y,
+                db.paperDB[idx].publicationDate.m,
+                db.paperDB[idx].publicationDate.d,
+                db.paperDB[idx].pages);
+
+    }
+
+    public static void printPaperShort(PaperDB db, int idx) {
+
+    }
+
+    public static void printPaperDetail(PaperDB db, int idx) {
+
+    }
 
 }
