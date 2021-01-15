@@ -40,13 +40,13 @@ public class PaperManager {
     }
 
     public static void menu(PaperDB db) {
-        System.out.println("1 to create a new paper");
-        System.out.println("2 to delete an entry");
-        System.out.println("3 to display publications");
-        System.out.println("4 to link a reference");
-        System.out.println("5 to search through the papers");
-        System.out.println("6 to get a statistical analysis");
-        System.out.println("0 will exit the program!");
+        System.out.println("( 1 ) to create a new paper");
+        System.out.println("( 2 ) to delete an entry");
+        System.out.println("( 3 ) to display publications");
+        System.out.println("( 4 ) to link a reference");
+        System.out.println("( 5 ) to search through the papers");
+        System.out.println("( 6 ) to get a statistical analysis");
+        System.out.println("( 0 ) will exit the program!");
 
         int selection = sc.nextInt();
         while (selection < 0 || selection > 6) {
@@ -67,8 +67,7 @@ public class PaperManager {
 
         } else if (selection == 3) {
             System.out.println("3 - display publications:");
-            printPaperLine(db, 0);
-            printPaperLine(db, 1);
+            printPaper(db);
 
         } else if (selection == 4) {
             System.out.println("4 - link a reference:");
@@ -189,10 +188,12 @@ public class PaperManager {
             }
             temp[db.free] = p;
             db.paperDB = temp;
+            //System.out.println("Added 10 extra spaces");
 
         }
         db.paperDB[db.free] = p;
         db.free++;
+        //System.out.printf("db.free is now %d", db.free);
     }
 
     private static void deletePaper(PaperDB db) {
@@ -204,14 +205,32 @@ public class PaperManager {
             idx = sc.nextInt();
         }
         int i=0;
-        while(db.paperDB[i] != null){
+        while(db.paperDB[i+1] != null){
             if(idx<=i){
                 db.paperDB[i] = db.paperDB[i+1];
-                db.paperDB[i+1] = null;
             }
             i++;
         }
+        db.paperDB[i] = null;
         db.free--; //one free space is added back
+        System.out.println("Paper successfully deleted!\n");
+    }
+
+    private static void printPaper(PaperDB db) {
+        System.out.println("Enter 0 to display all papers or 1 to display a specific one:");
+        int choice = sc.nextInt();
+
+        while(choice<0 || choice >1){
+            System.out.println("Please enter 0 to display all papers, or 1 to display a specific one:");
+            choice = sc.nextInt();
+        }
+        if(choice == 0){
+            for(int i=0; i<db.free; i++){
+                printPaperLine(db, i);
+            }
+        }else{
+            System.out.println("Haven't gotten to this yet, sorry");
+        }
     }
 
     public static void printPaperLine(PaperDB db, int idx) {
@@ -231,17 +250,19 @@ public class PaperManager {
     }
 
     public static void printPaperShort(PaperDB db, int idx) {
-        if(db.paperDB[idx]==null) {
-            System.out.println("There is no paper at that location!");
-            return;
+        while(idx>=db.free){
+            System.out.println("There is no paper at that location.!");
+            System.out.printf("Please enter a number between 0 and %d\n", db.free-1);
+            idx = sc.nextInt();
         }
 
     }
 
     public static void printPaperDetail(PaperDB db, int idx) {
-        if(db.paperDB[idx]==null) {
-            System.out.println("There is no paper at that location!");
-            return;
+        while(idx>=db.free){
+            System.out.println("There is no paper at that location.!");
+            System.out.printf("Please enter a number between 0 and %d\n", db.free-1);
+            idx = sc.nextInt();
         }
     }
 
