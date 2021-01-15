@@ -25,7 +25,7 @@ public class PaperManager {
 
         System.out.println("Welcome to the Literature Management Tool!");
         System.out.println("Choose what you want to do:");
-        menu();
+        menu(db);
 
     }
 
@@ -79,7 +79,7 @@ public class PaperManager {
         return true;
     }
 
-    public static Paper scanPaper() {
+    public static void scanPaper(PaperDB db) {
         boolean isDateCorrect = false;
         System.out.println("Please enter the author of the paper:");
         String author = sc.next();
@@ -87,19 +87,24 @@ public class PaperManager {
         String title = sc.next();
 
         //put date in and check
+        //compiler doesn't like uninitialized variables, even if they will be further down
+        int y = 1970;
+        int m = 1;
+        int d = 1;
         while (isDateCorrect == false) {
             System.out.println("Please enter the publication year:");
-            int y = sc.nextInt();
+            y = sc.nextInt();
             System.out.println("Please enter the publication month:");
-            int m = sc.nextInt();
+            m = sc.nextInt();
             System.out.println("Please enter the publication day:");
-            int d = sc.nextInt();
+            d = sc.nextInt();
             isDateCorrect = checkDate(y, m, d);
         }
 
         System.out.println("Please enter the amount of pages of the paper:");
         int pages = sc.nextInt();
 
+        add(db, createPaper(author, title, y, m, d, pages));
     }
 
     public static void add(PaperDB db, Paper p) {
@@ -128,7 +133,7 @@ public class PaperManager {
         return p;
     }
 
-    public static void menu() {
+    public static void menu(PaperDB db) {
         System.out.println("1 to create a new paper");
         System.out.println("2 to delete an entry");
         System.out.println("3 to display publications");
@@ -148,6 +153,7 @@ public class PaperManager {
             System.exit(0);
         } else if (selection == 1) {
             System.out.println("1 - create a new paper:");
+            scanPaper(db);
 
         } else if (selection == 2) {
             System.out.println("2 - delete an entry:");
