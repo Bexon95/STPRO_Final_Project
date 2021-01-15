@@ -12,13 +12,15 @@ class Date {
 }
 
 class PaperDB {
-    PaperDB paperDB[] = new PaperDB[0];
+    Paper[] paperDB = new Paper[10]; //instead of copying to new array (+1) every time, I do it in batches of ten
+    int free = 0;
 }
 
 public class PaperManager {
     public static final Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+        PaperDB db = new PaperDB();
 
         System.out.println("Welcome to the Literature Management Tool!");
         System.out.println("Choose what you want to do:");
@@ -26,11 +28,23 @@ public class PaperManager {
 
     }
 
-    public static void add (PaperDB paperDB, Paper p) {
-        PaperDB temp[] = new PaperDB[paperDB.length];
+    public static Paper scan
+
+    public static void add (PaperDB db, Paper p) {
+        if (db.free == db.paperDB.length) {
+            Paper temp[] = new Paper[db.paperDB.length+10];
+            for(int i = 0; i<temp.length; i++) {
+                temp[i] = db.paperDB[i];
+            }
+            temp[db.free] = p;
+            db.paperDB = temp;
+
+        }
+        db.paperDB[db.free] = p;
+        db.free++;
     }
 
-    public static void createPaper(String author, String title, int y, int m, int d, int pages) {
+    public static Paper createPaper(String author, String title, int y, int m, int d, int pages) {
         Paper p = new Paper();
         p.author = author;
         p.title = title;
@@ -38,6 +52,8 @@ public class PaperManager {
         p.publicationDate.m = m;
         p.publicationDate.d = d;
         p.pages = pages;
+
+        return p;
     }
 
     public static void menu() {
