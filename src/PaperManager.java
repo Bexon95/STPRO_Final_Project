@@ -199,7 +199,8 @@ public class PaperManager {
     }
 
     private static void deletePaper(PaperDB db) {
-        System.out.println("Which entry would you like to delete? ");
+        System.out.printf("Which paper do you want to delete? Enter a number between 0 and %d,\n", db.free - 1);
+
         int idx = sc.nextInt();
         while (idx >= db.free) {
             System.out.println("There is no paper at that location.!");
