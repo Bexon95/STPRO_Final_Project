@@ -48,10 +48,11 @@ public class PaperManager {
         System.out.println("( 4 ) to link a reference");
         System.out.println("( 5 ) to search through the papers");
         System.out.println("( 6 ) to get a statistical analysis");
+        System.out.println("( 7 ) to sort the paper database");
         System.out.println("( 0 ) will exit the program!");
 
         int selection = sc.nextInt();
-        while (selection < 0 || selection > 6) {
+        while (selection < 0 || selection > 7) {
             System.out.println("Selection invalid. Please choose a number between 0-6.");
             selection = sc.nextInt();
         }
@@ -80,6 +81,9 @@ public class PaperManager {
         } else if (selection == 6) {
             System.out.println("6 - get a statistical analysis:");
 
+        } else if (selection == 7) {
+            System.out.println("7 - sort the papers:");
+            sortMenu(db);
         } else {
             System.err.println("There was an error in the menu (line 84)");
             System.exit(0);
@@ -198,7 +202,7 @@ public class PaperManager {
         //System.out.printf("db.free is now %d", db.free);
     }
 
-    private static void deletePaper(PaperDB db) {
+    public static void deletePaper(PaperDB db) {
         System.out.printf("Which paper do you want to delete? Enter a number between 0 and %d\n", db.free - 1);
 
         int idx = sc.nextInt();
@@ -219,7 +223,7 @@ public class PaperManager {
         System.out.println("Paper successfully deleted!\n");
     }
 
-    private static void printPaper(PaperDB db) {
+    public static void printPaper(PaperDB db) {
         //enter display option
         System.out.println("Enter 0 to display all papers or 1 to display a specific one:");
         int display = sc.nextInt();
@@ -282,7 +286,7 @@ public class PaperManager {
                     printPaperLine(db, i);
                 }
                 System.out.printf("-----------------------------------------------------------------------\n");
-                System.out.printf("%d element(s)\n", db.free-1);
+                System.out.printf("%d element(s)\n", db.free - 1);
                 System.out.printf("-----------------------------------------------------------------------\n");
 
             } else if (type == 1) {
@@ -293,7 +297,7 @@ public class PaperManager {
                     printPaperShort(db, i);
                 }
                 System.out.printf("----------------------------------------------------\n");
-                System.out.printf("%d element(s)\n", db.free-1);
+                System.out.printf("%d element(s)\n", db.free - 1);
                 System.out.printf("----------------------------------------------------\n");
             }
         }
@@ -315,12 +319,63 @@ public class PaperManager {
     public static void printPaperDetail(PaperDB db, int idx) {
         System.out.printf("%11s: %s\n", "Author", db.paperDB[idx].author);
         System.out.printf("%11s: %-50.50s\n", "Title", db.paperDB[idx].title);
-        System.out.printf("%11s: %d-%d-%d\n", "Date",   db.paperDB[idx].publicationDate.y,
-                                                        db.paperDB[idx].publicationDate.m,
-                                                        db.paperDB[idx].publicationDate.d);
+        System.out.printf("%11s: %d-%d-%d\n", "Date", db.paperDB[idx].publicationDate.y,
+                db.paperDB[idx].publicationDate.m,
+                db.paperDB[idx].publicationDate.d);
         System.out.printf("%11s: %d\n", "Pages", db.paperDB[idx].pages);
         System.out.printf("%11s: %d\n", "References", 0);
         //Code for references here
     }
+
+    public static void sortMenu(PaperDB db) {
+        System.out.println("Enter ( 0 ) to sort by author");
+        System.out.println("Enter ( 1 ) to sort by title");
+        System.out.println("Enter ( 2 ) to sort by publication Date");
+        int choice = sc.nextInt();
+        while (choice < 0 || choice > 2) {
+            System.out.println("Enter ( 0 ) to sort by author");
+            System.out.println("Enter ( 1 ) to sort by title");
+            System.out.println("Enter ( 2 ) to sort by publication Date");
+            choice = sc.nextInt();
+        }
+        if (choice == 0) {
+            //mergeSort(db, 0);
+        } else if (choice == 1) {
+            //mergeSort(db, 1);
+        } else if (choice == 2) {
+            mergeSortDate(db);
+        }
+    }
+
+    public static void mergeSortDate(PaperDB db) {
+        mSort(db, 0, db.free - 1, new PaperDB()); //do not use db.paperDB.length -> Array is longer because some slots are null
+    }
+
+    private static void mSort(PaperDB db, int left, int right, PaperDB aux) {
+        int middle = (right + left) / 2;
+        if (right <= left)
+            return;
+        mSort(db, left, middle, aux);
+        mSort(db, middle + 1, right, aux);
+        merge(db, left, middle, right, aux);
+    }
+
+    public static void merge(PaperDB db, int left, int middle, int right, PaperDB aux) {
+        int i, j, k;
+        for (i = middle + 1; i > left; i--)
+            aux.paperDB[i - 1] = db.paperDB[i - 1];
+        for (j = middle; j < right; j++)
+            aux.paperDB[right + middle - j] = db.paperDB[j + 1];
+        for (k = left; k <= right; k++)
+            if (dateConverter(aux.paperDB[j]) < dateConverter(aux.paperDB[i]))
+                db.paperDB[k] = aux.paperDB[j--];
+            else
+                db.paperDB[k] = aux.paperDB[i++];
+    }
+
+    public static int dateConverter(Paper p) {
+        return p.publicationDate.y * 10000 + p.publicationDate.m * 100 + p.publicationDate.d;
+    }
+
 
 }
