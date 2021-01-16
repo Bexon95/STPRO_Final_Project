@@ -32,6 +32,8 @@ public class PaperManager {
         add(db, createPaper("Mandl", "g-title", 2018, 7, 6, 5));
         add(db, createPaper("Satek", "z-title", 2004, 8, 27, 12));
         add(db, createPaper("Brunnbauer", "l-title", 2004, 8, 17, 2));
+        add(db, createPaper("Benjamin Alexander Buisman Aguilar", "Coding for Dummies, by Dummies", 2004, 8, 17, 1232));
+        add(db, createPaper("Claude Cohen-Tinnoudji", "Why longer titles don't make you sound smart, and other myths to be discovered", 2004, 8, 17, 2));
 
         while (true) {
             menu(db);
@@ -199,15 +201,15 @@ public class PaperManager {
     private static void deletePaper(PaperDB db) {
         System.out.println("Which entry would you like to delete? ");
         int idx = sc.nextInt();
-        while(idx>=db.free){
+        while (idx >= db.free) {
             System.out.println("There is no paper at that location.!");
-            System.out.printf("Please enter a number between 0 and %d\n", db.free-1);
+            System.out.printf("Please enter a number between 0 and %d\n", db.free - 1);
             idx = sc.nextInt();
         }
-        int i=0;
-        while(db.paperDB[i+1] != null){
-            if(idx<=i){
-                db.paperDB[i] = db.paperDB[i+1];
+        int i = 0;
+        while (db.paperDB[i + 1] != null) {
+            if (idx <= i) {
+                db.paperDB[i] = db.paperDB[i + 1];
             }
             i++;
         }
@@ -217,53 +219,107 @@ public class PaperManager {
     }
 
     private static void printPaper(PaperDB db) {
+        //enter display option
         System.out.println("Enter 0 to display all papers or 1 to display a specific one:");
-        int choice = sc.nextInt();
+        int display = sc.nextInt();
 
-        while(choice<0 || choice >1){
+        while (display < 0 || display > 1) {
             System.out.println("Please enter 0 to display all papers, or 1 to display a specific one:");
-            choice = sc.nextInt();
+            display = sc.nextInt();
         }
-        if(choice == 0){
-            for(int i=0; i<db.free; i++){
-                printPaperLine(db, i);
+
+        //enter type of display (line, short, detail)
+        System.out.println("Enter ( 0 ) to display in the 'line' format");
+        System.out.println("Enter ( 1 ) to display in the 'short' format");
+        if (display == 1)
+            System.out.println("Enter ( 2 ) to display in the 'detailed' format");
+        int type = sc.nextInt();
+
+        if (display == 0) {
+            while (type < 0 || type > 1) {
+                System.out.println("Enter ( 0 ) to display in the 'line' format");
+                System.out.println("Enter ( 1 ) to display in the 'short' format");
+                type = sc.nextInt();
             }
-        }else{
-            System.out.println("Haven't gotten to this yet, sorry");
+        } else if (display == 1) {
+            while (type < 0 || type > 2) {
+                System.out.println("Enter ( 0 ) to display in the 'line' format");
+                System.out.println("Enter ( 1 ) to display in the 'short' format");
+                System.out.println("Enter ( 2 ) to display in the 'detailed' format");
+                type = sc.nextInt();
+            }
+        }
+
+        if (display == 1) {
+            System.out.printf("Which paper do you want to print? Enter a number between 0 and %d,\n", db.free - 1);
+            int idx = sc.nextInt();
+            while (idx < 0 || idx > db.free - 1) {
+                System.out.printf("Which paper do you want to print? Enter a number between 0 and %d,\n", db.free - 1);
+                idx = sc.nextInt();
+            }
+            if (type == 0) {
+                System.out.printf("-----------------------------------------------------------------------\n");
+                printPaperLine(db, idx);
+                System.out.printf("-----------------------------------------------------------------------\n");
+            } else if (type == 1) {
+                System.out.printf("----------------------------------------------------\n");
+                printPaperShort(db, idx);
+                System.out.printf("----------------------------------------------------\n");
+            } else if (type == 2) {
+                System.out.printf("----------------------------------------------------\n");
+                printPaperDetail(db, idx);
+                System.out.printf("----------------------------------------------------\n");
+            }
+        }
+
+        if (display == 0) {
+            if (type == 0) {
+                System.out.printf("-----------------------------------------------------------------------\n");
+                System.out.printf("%-25s  %-25s  %-10s  %-5s\n", "Author", "Title", "Pub.Date", "Pages");
+                System.out.printf("-------------------------  -------------------------  ----------  -----\n");
+                for (int i = 0; i < db.free; i++) {
+                    printPaperLine(db, i);
+                }
+                System.out.printf("-----------------------------------------------------------------------\n");
+                System.out.printf("%d element(s)\n", db.free-1);
+                System.out.printf("-----------------------------------------------------------------------\n");
+
+            } else if (type == 1) {
+                System.out.printf("----------------------------------------------------\n");
+                System.out.printf("%-25s  %-25s\n", "Author", "Title");
+                System.out.printf("-------------------------  -------------------------\n");
+                for (int i = 0; i < db.free; i++) {
+                    printPaperShort(db, i);
+                }
+                System.out.printf("----------------------------------------------------\n");
+                System.out.printf("%d element(s)\n", db.free-1);
+                System.out.printf("----------------------------------------------------\n");
+            }
         }
     }
 
     public static void printPaperLine(PaperDB db, int idx) {
-        while(idx>=db.free){
-            System.out.println("There is no paper at that location.!");
-            System.out.printf("Please enter a number between 0 and %d\n", db.free-1);
-            idx = sc.nextInt();
-        }
-
-        System.out.printf("%-30.30s - %-30.30s - %4d.%02d.%02d %d\n", db.paperDB[idx].author,
+        System.out.printf("%-25.25s  %-25.25s  %4d-%02d-%02d   %4d\n", db.paperDB[idx].author,
                 db.paperDB[idx].title,
                 db.paperDB[idx].publicationDate.y,
                 db.paperDB[idx].publicationDate.m,
                 db.paperDB[idx].publicationDate.d,
                 db.paperDB[idx].pages);
-
     }
 
     public static void printPaperShort(PaperDB db, int idx) {
-        while(idx>=db.free){
-            System.out.println("There is no paper at that location.!");
-            System.out.printf("Please enter a number between 0 and %d\n", db.free-1);
-            idx = sc.nextInt();
-        }
-
+        System.out.printf("%-25.25s  %25.25s\n", db.paperDB[idx].author, db.paperDB[idx].title);
     }
 
     public static void printPaperDetail(PaperDB db, int idx) {
-        while(idx>=db.free){
-            System.out.println("There is no paper at that location.!");
-            System.out.printf("Please enter a number between 0 and %d\n", db.free-1);
-            idx = sc.nextInt();
-        }
+        System.out.printf("%11s: %s\n", "Author", db.paperDB[idx].author);
+        System.out.printf("%11s: %-50.50s\n", "Title", db.paperDB[idx].title);
+        System.out.printf("%11s: %d-%d-%d\n", "Date",   db.paperDB[idx].publicationDate.y,
+                                                        db.paperDB[idx].publicationDate.m,
+                                                        db.paperDB[idx].publicationDate.d);
+        System.out.printf("%11s: %d\n", "Pages", db.paperDB[idx].pages);
+        System.out.printf("%11s: %d\n", "References", 0);
+        //Code for references here
     }
 
 }
