@@ -339,43 +339,88 @@ public class PaperManager {
             choice = sc.nextInt();
         }
         if (choice == 0) {
-            //mergeSort(db, 0);
+            mergeSort(db, 0);
         } else if (choice == 1) {
-            //mergeSort(db, 1);
+            mergeSort(db, 1);
         } else if (choice == 2) {
-            mergeSortDate(db);
+            mergeSortDate(db, 2);
         }
     }
 
-    public static void mergeSortDate(PaperDB db) {
-        mSort(db, 0, db.free - 1, new PaperDB()); //do not use db.paperDB.length -> Array is longer because some slots are null
+    public static void mergeSortDate(PaperDB db, int choice) {
+        mSort(db, 0, db.free - 1, new PaperDB(), choice); //do not use db.paperDB.length -> Array is longer because some slots are null
     }
 
-    private static void mSort(PaperDB db, int left, int right, PaperDB aux) {
+    private static void mSort(PaperDB db, int left, int right, PaperDB aux, int choice) {
         int middle = (right + left) / 2;
         if (right <= left)
             return;
-        mSort(db, left, middle, aux);
-        mSort(db, middle + 1, right, aux);
-        merge(db, left, middle, right, aux);
+        mSort(db, left, middle, aux, choice);
+        mSort(db, middle + 1, right, aux, choice);
+
+        if (choice == 0) {
+            mergeAuthor(db, left, middle, right, aux);
+        } else if (choice == 1) {
+            mergeTitle(db, left, middle, right, aux);
+        } else if (choice == 2) {
+            mergeDate(db, left, middle, right, aux);
+        }
     }
 
-    public static void merge(PaperDB db, int left, int middle, int right, PaperDB aux) {
+    public static void mergeAuthor(PaperDB db, int left, int middle, int right, PaperDB aux) {
         int i, j, k;
         for (i = middle + 1; i > left; i--)
             aux.paperDB[i - 1] = db.paperDB[i - 1];
         for (j = middle; j < right; j++)
             aux.paperDB[right + middle - j] = db.paperDB[j + 1];
+
         for (k = left; k <= right; k++)
-            if (dateConverter(aux.paperDB[j]) < dateConverter(aux.paperDB[i]))
+            if (stringComparator(aux.paperDB[j].author, aux.paperDB[i].author) < 0) //passes paper at array[j/i]
                 db.paperDB[k] = aux.paperDB[j--];
             else
                 db.paperDB[k] = aux.paperDB[i++];
     }
 
+    public static void mergeTitle(PaperDB db, int left, int middle, int right, PaperDB aux) {
+        int i, j, k;
+        for (i = middle + 1; i > left; i--)
+            aux.paperDB[i - 1] = db.paperDB[i - 1];
+        for (j = middle; j < right; j++)
+            aux.paperDB[right + middle - j] = db.paperDB[j + 1];
+
+        for (k = left; k <= right; k++)
+            if (stringComparator(aux.paperDB[j].title, aux.paperDB[i].title) < 0) //passes paper at array[j/i]
+                db.paperDB[k] = aux.paperDB[j--];
+            else
+                db.paperDB[k] = aux.paperDB[i++];
+    }
+
+    public static void mergeDate(PaperDB db, int left, int middle, int right, PaperDB aux) {
+        int i, j, k;
+        for (i = middle + 1; i > left; i--)
+            aux.paperDB[i - 1] = db.paperDB[i - 1];
+        for (j = middle; j < right; j++)
+            aux.paperDB[right + middle - j] = db.paperDB[j + 1];
+
+        for (k = left; k <= right; k++)
+            if (dateConverter(aux.paperDB[j]) < dateConverter(aux.paperDB[i])) //passes paper at array[j/i]
+                db.paperDB[k] = aux.paperDB[j--];
+            else
+                db.paperDB[k] = aux.paperDB[i++];
+    }
+
+    //got the idea from _20_BSTPhoneBook
+    public static int stringComparator(String db, String aux) {
+        return db.compareToIgnoreCase(aux);
+    }
+
+    //convert dates from yyyy-mm-dd to yyyymmdd
     public static int dateConverter(Paper p) {
         return p.publicationDate.y * 10000 + p.publicationDate.m * 100 + p.publicationDate.d;
     }
 
+    public static void mergeSort(PaperDB db, int choice) {
+        mSort(db, 0, db.free - 1, new PaperDB(), choice); //do not use db.paperDB.length -> Array is longer because some slots are null
+    }
 
 }
