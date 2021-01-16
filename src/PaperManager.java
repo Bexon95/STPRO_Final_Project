@@ -81,7 +81,7 @@ public class PaperManager {
             System.out.println("6 - get a statistical analysis:");
 
         } else {
-            System.err.println("You should not see this error message. Please contact the administrator!");
+            System.err.println("There was an error in the menu (line 84)");
             System.exit(0);
         }
 
@@ -109,7 +109,7 @@ public class PaperManager {
             d = sc.nextInt();
             isDateCorrect = checkDate(y, m, d);
             if (isDateCorrect == false)
-                System.out.println("The Date you entered seems to be incorrect, please try again:");
+                System.out.println("The date you entered seems to be incorrect, please try again:");
         }
 
         System.out.println("Please enter the amount of pages of the paper:");
@@ -199,7 +199,7 @@ public class PaperManager {
     }
 
     private static void deletePaper(PaperDB db) {
-        System.out.printf("Which paper do you want to delete? Enter a number between 0 and %d,\n", db.free - 1);
+        System.out.printf("Which paper do you want to delete? Enter a number between 0 and %d\n", db.free - 1);
 
         int idx = sc.nextInt();
         while (idx >= db.free) {
@@ -252,10 +252,10 @@ public class PaperManager {
         }
 
         if (display == 1) {
-            System.out.printf("Which paper do you want to print? Enter a number between 0 and %d,\n", db.free - 1);
+            System.out.printf("Which paper do you want to print? Enter a number between 0 and %d\n", db.free - 1);
             int idx = sc.nextInt();
             while (idx < 0 || idx > db.free - 1) {
-                System.out.printf("Which paper do you want to print? Enter a number between 0 and %d,\n", db.free - 1);
+                System.out.printf("Which paper do you want to print? Enter a number between 0 and %d\n", db.free - 1);
                 idx = sc.nextInt();
             }
             if (type == 0) {
