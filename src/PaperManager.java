@@ -41,6 +41,9 @@ public class PaperManager {
         }
     }
 
+    /* ----------------------- */
+    /* ------- M E N U ------- */
+    /* ----------------------- */
     public static void menu(PaperDB db) {
         System.out.println("( 1 ) to create a new paper");
         System.out.println("( 2 ) to delete an entry");
@@ -80,7 +83,7 @@ public class PaperManager {
 
         } else if (selection == 6) {
             System.out.println("6 - get a statistical analysis:");
-
+            analyze(db);
         } else if (selection == 7) {
             System.out.println("7 - sort the papers:");
             sortMenu(db);
@@ -91,6 +94,9 @@ public class PaperManager {
 
     }
 
+    /* ----------------------------------- */
+    /* ------- S C A N   P A P E R ------- */
+    /* ----------------------------------- */
     public static void scanPaper(PaperDB db) {
         boolean isDateCorrect = false;
         sc.nextLine(); //it catches the newline (\n) of me pressing "Enter".
@@ -122,6 +128,9 @@ public class PaperManager {
         add(db, createPaper(author, title, y, m, d, pages));
     }
 
+    /* ----------------------------------- */
+    /* ------- C H E C K   D A T E ------- */
+    /* ----------------------------------- */
     public static boolean checkDate(int y, int m, int d) {
         boolean isLeapYear = false;
 
@@ -172,6 +181,9 @@ public class PaperManager {
         return true;
     }
 
+    /* --------------------------------------- */
+    /* ------- C R E A T E   P A P E R ------- */
+    /* --------------------------------------- */
     public static Paper createPaper(String author, String title, int y, int m, int d, int pages) {
         Paper p = new Paper();
         p.author = author;
@@ -186,6 +198,9 @@ public class PaperManager {
         return p;
     }
 
+    /* --------------------------------- */
+    /* ------- A D D   P A P E R ------- */
+    /* --------------------------------- */
     public static void add(PaperDB db, Paper p) {
         if (db.free == db.paperDB.length) {
             Paper temp[] = new Paper[db.paperDB.length + 10];
@@ -202,6 +217,9 @@ public class PaperManager {
         //System.out.printf("db.free is now %d", db.free);
     }
 
+    /* --------------------------------------- */
+    /* ------- D E L E T E   P A P E R ------- */
+    /* --------------------------------------- */
     public static void deletePaper(PaperDB db) {
         System.out.printf("Which paper do you want to delete? Enter a number between 0 and %d\n", db.free - 1);
 
@@ -223,6 +241,9 @@ public class PaperManager {
         System.out.println("Paper successfully deleted!\n");
     }
 
+    /* ------------------------------------- */
+    /* ------- P R I N T   P A P E R ------- */
+    /* ------------------------------------- */
     public static void printPaper(PaperDB db) {
         //enter display option
         System.out.println("Enter 0 to display all papers or 1 to display a specific one:");
@@ -327,6 +348,13 @@ public class PaperManager {
         //Code for references here
     }
 
+    public static void analyze(PaperDB db){
+
+    }
+
+    /* --------------------------------- */
+    /* ------- M E R G E S O R T ------- */
+    /* --------------------------------- */
     public static void sortMenu(PaperDB db) {
         System.out.println("Enter ( 0 ) to sort by author");
         System.out.println("Enter ( 1 ) to sort by title");
@@ -347,8 +375,12 @@ public class PaperManager {
         }
     }
 
-    public static void mergeSortDate(PaperDB db, int choice) {
+    public static void mergeSort(PaperDB db, int choice) {
         mSort(db, 0, db.free - 1, new PaperDB(), choice); //do not use db.paperDB.length -> Array is longer because some slots are null
+    }
+
+    public static void mergeSortDate(PaperDB db, int choice) {
+        mSort(db, 0, db.free - 1, new PaperDB(), choice); //do not use db.paperDB.length -> Array is longer because some slots are empty
     }
 
     private static void mSort(PaperDB db, int left, int right, PaperDB aux, int choice) {
@@ -367,6 +399,9 @@ public class PaperManager {
         }
     }
 
+    /* --------------------------------------- */
+    /* ------- M E R G E   A U T H O R ------- */
+    /* --------------------------------------- */
     public static void mergeAuthor(PaperDB db, int left, int middle, int right, PaperDB aux) {
         int i, j, k;
         for (i = middle + 1; i > left; i--)
@@ -381,6 +416,9 @@ public class PaperManager {
                 db.paperDB[k] = aux.paperDB[i++];
     }
 
+    /* ------------------------------------- */
+    /* ------- M E R G E   T I T L E ------- */
+    /* ------------------------------------- */
     public static void mergeTitle(PaperDB db, int left, int middle, int right, PaperDB aux) {
         int i, j, k;
         for (i = middle + 1; i > left; i--)
@@ -395,6 +433,9 @@ public class PaperManager {
                 db.paperDB[k] = aux.paperDB[i++];
     }
 
+    /* ----------------------------------- */
+    /* ------- M E R G E   D A T E ------- */
+    /* ----------------------------------- */
     public static void mergeDate(PaperDB db, int left, int middle, int right, PaperDB aux) {
         int i, j, k;
         for (i = middle + 1; i > left; i--)
@@ -417,10 +458,6 @@ public class PaperManager {
     //convert dates from yyyy-mm-dd to yyyymmdd
     public static int dateConverter(Paper p) {
         return p.publicationDate.y * 10000 + p.publicationDate.m * 100 + p.publicationDate.d;
-    }
-
-    public static void mergeSort(PaperDB db, int choice) {
-        mSort(db, 0, db.free - 1, new PaperDB(), choice); //do not use db.paperDB.length -> Array is longer because some slots are null
     }
 
 }
