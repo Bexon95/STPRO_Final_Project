@@ -205,7 +205,7 @@ public class PaperManager {
     public static void add(PaperDB db, Paper p) {
         if (db.free == db.paperDB.length) {
             Paper[] temp = new Paper[db.paperDB.length + 10];
-            for (int i = 0; i < temp.length; i++) {
+            for (int i = 0; i < db.paperDB.length; i++) {
                 temp[i] = db.paperDB[i];
             }
             temp[db.free] = p;
@@ -558,7 +558,6 @@ public class PaperManager {
     public static int stringComparator(String db, String aux) {
         return db.compareToIgnoreCase(aux);
     }
-
     //convert dates from yyyy-mm-dd to yyyymmdd
     public static int dateConverter(Paper p) {
         return p.publicationDate.y * 10000 + p.publicationDate.m * 100 + p.publicationDate.d;
