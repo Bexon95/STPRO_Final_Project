@@ -80,6 +80,7 @@ public class PaperManager {
 
         } else if (selection == 5) {
             System.out.println("5 - search through the papers:");
+            searchPapers(db);
 
         } else if (selection == 6) {
             System.out.println("6 - get a statistical analysis:");
@@ -203,7 +204,7 @@ public class PaperManager {
     /* --------------------------------- */
     public static void add(PaperDB db, Paper p) {
         if (db.free == db.paperDB.length) {
-            Paper temp[] = new Paper[db.paperDB.length + 10];
+            Paper[] temp = new Paper[db.paperDB.length + 10];
             for (int i = 0; i < temp.length; i++) {
                 temp[i] = db.paperDB[i];
             }
@@ -348,8 +349,111 @@ public class PaperManager {
         //Code for references here
     }
 
-    public static void analyze(PaperDB db){
+    /* --------------------------------------- */
+    /* ------- S E A R C H   P A P E R ------- */
+    /* --------------------------------------- */
+    public static void searchPapers(PaperDB db) {
+        int choice = 2;
+        while (choice < 0 || choice > 1) {
+            System.out.println("Enter ( 0 ) to filter by author");
+            System.out.println("Enter ( 1 ) to filter by title");
+            choice = sc.nextInt();
+        }
+        PaperDB searchMatch = new PaperDB();
+        searchString(db, searchMatch, choice);
 
+        /*
+        Ursprünglich war mein Plan folgender:
+        PaperDB searchMatch = searchString(db, choice);
+        searchString wird aufgerufen, ich erstelle temp (wie auch jetzt der Fall)
+        Und dann return temp. Allerdings kommt der Fehler: Required PaperDB, provided Paper[].
+        Warum funktioniert dann allerdings die jetzige Funktion mit:
+        searchMatch = temp;
+        return searchMatch; ??
+         */
+
+        if(searchMatch.paperDB.length == 0) {
+            System.out.println("There were no matches!");
+            return;
+        }
+
+        System.out.printf("-----------------------------------------------------------------------\n");
+        System.out.printf("%-25s  %-25s  %-10s  %-5s\n", "Author", "Title", "Pub.Date", "Pages");
+        System.out.printf("-------------------------  -------------------------  ----------  -----\n");
+        for (int i = 0; i < searchMatch.paperDB.length; i++) {
+            printPaperLine(searchMatch, i);
+        }
+        System.out.printf("-----------------------------------------------------------------------\n");
+        System.out.printf("%d element(s)\n", searchMatch.paperDB.length);
+        System.out.printf("-----------------------------------------------------------------------\n");
+
+    }
+
+    /* ----------------------------------------- */
+    /* ------- S E A R C H   S T R I N G ------- */
+    /* ----------------------------------------- */
+    public static PaperDB searchString(PaperDB db, PaperDB searchMatch, int choice) {
+        int size = 0;
+        System.out.println("Enter the search word. Careful, it's case-sensitive!");
+        sc.nextLine(); //necessary to catch enter
+        String searchTerm = sc.nextLine();
+
+        if (choice == 0) {
+            //yes, it's inefficient to run through the loop twice, but better than to copy everything to a new array every time
+            for (int i = 0; i < db.free; i++) {
+                if (db.paperDB[i].author.contains(searchTerm)) {
+                    size++;
+                }
+            }
+            Paper[] temp = new Paper[size];
+
+            //in case there are no matches
+            if (size == 0) {
+                searchMatch.paperDB = temp;
+                return searchMatch;
+            }
+            for (int i = 0, j = 0; i < db.free; i++) {
+                if (db.paperDB[i].author.contains(searchTerm)) {
+                    temp[j] = db.paperDB[i];
+                    j++;
+                }
+            }
+            searchMatch.paperDB = temp;
+        } else {
+            for (int i = 0; i < db.free; i++) {
+                if (db.paperDB[i].title.contains(searchTerm)) {
+                    size++;
+                }
+            }
+            Paper[] temp = new Paper[size];
+
+            //in case there are no matches
+            if (size == 0) {
+                searchMatch.paperDB = temp;
+                return searchMatch;
+            }
+            for (int i = 0, j = 0; i < db.free; i++) {
+                if (db.paperDB[i].title.contains(searchTerm)) {
+                    temp[j] = db.paperDB[i];
+                    j++;
+                }
+            }
+            ;
+            //wieso geht return temp nicht?? Error: Provided Paper[], required PaperDB.
+            searchMatch.paperDB = temp;
+        }
+        return searchMatch;
+    }
+
+    /* ----------------------------- */
+    /* ------- A N A L Y Z E ------- */
+    /* ----------------------------- */
+    public static void analyze(PaperDB db) {
+        int numberPapers;
+        int avgPages;
+        //int avgReferences;
+        int mostReferences;
+        String mostRefPaper;
     }
 
     /* --------------------------------- */
