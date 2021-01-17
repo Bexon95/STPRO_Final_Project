@@ -5,6 +5,7 @@ class Paper {
     String title;
     Date publicationDate = new Date();
     int pages;
+    RefNode reference = null;
 }
 
 class Date {
@@ -14,6 +15,11 @@ class Date {
 class PaperDB {
     Paper[] paperDB = new Paper[10]; //instead of copying to new array (+1) every time, I do it in batches of ten
     int free = 0;
+}
+
+class RefNode {
+    Paper paper;
+    RefNode left, right;
 }
 
 public class PaperManager {
@@ -45,6 +51,7 @@ public class PaperManager {
     /* ------- M E N U ------- */
     /* ----------------------- */
     public static void menu(PaperDB db) {
+        System.out.println("\n#---------- M E N U ----------#");
         System.out.println("( 1 ) to create a new paper");
         System.out.println("( 2 ) to delete an entry");
         System.out.println("( 3 ) to display publications");
@@ -77,6 +84,7 @@ public class PaperManager {
 
         } else if (selection == 4) {
             System.out.println("4 - link a reference:");
+            addReference(db);
 
         } else if (selection == 5) {
             System.out.println("5 - search through the papers:");
@@ -194,7 +202,7 @@ public class PaperManager {
         p.publicationDate.d = d;
         p.pages = pages;
 
-        System.out.println("Paper successfully created!\n");
+        System.out.println("Paper successfully created!");
 
         return p;
     }
@@ -349,6 +357,27 @@ public class PaperManager {
         //Code for references here
     }
 
+    /* ----------------------------------- */
+    /* ------- L I N K   P A P E R ------- */
+    /* ----------------------------------- */
+    public static void addReference(PaperDB db) {
+        System.out.println("select paper, then reference:");
+
+        System.out.printf("----------------------------------------------------------\n");
+        System.out.printf("%-5s %-25s  %-25s\n", "Nr", "Author", "Title");
+        System.out.printf("-------------------------------  -------------------------\n");
+        for (int i = 0; i < db.free; i++) {
+            System.out.printf("( %d ) ", i);
+            printPaperShort(db, i);
+        }
+        int mainPaper = sc.nextInt();
+        int refPaper = sc.nextInt();
+
+        RefNode nN = new RefNode();
+        //nN.paper = db.paperDB[mainPaper];
+
+    }
+
     /* --------------------------------------- */
     /* ------- S E A R C H   P A P E R ------- */
     /* --------------------------------------- */
@@ -372,7 +401,7 @@ public class PaperManager {
         return searchMatch; ??
          */
 
-        if(searchMatch.paperDB.length == 0) {
+        if (searchMatch.paperDB.length == 0) {
             System.out.println("There were no matches!");
             return;
         }
@@ -558,6 +587,7 @@ public class PaperManager {
     public static int stringComparator(String db, String aux) {
         return db.compareToIgnoreCase(aux);
     }
+
     //convert dates from yyyy-mm-dd to yyyymmdd
     public static int dateConverter(Paper p) {
         return p.publicationDate.y * 10000 + p.publicationDate.m * 100 + p.publicationDate.d;
