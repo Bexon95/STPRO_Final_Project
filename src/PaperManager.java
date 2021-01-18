@@ -59,17 +59,19 @@ public class PaperManager {
         System.out.println("( 5 ) to search through the papers");
         System.out.println("( 6 ) to get a statistical analysis");
         System.out.println("( 7 ) to sort the paper database");
+        System.out.println("( 8 ) to show the references of a paper");
         System.out.println("( 0 ) will exit the program!");
 
         int selection = sc.nextInt();
-        while (selection < 0 || selection > 7) {
-            System.out.println("Selection invalid. Please choose a number between 0-6.");
+        while (selection < 0 || selection > 8) {
+            System.out.println("Selection invalid. Please choose a number between 0-8.");
             selection = sc.nextInt();
         }
 
         if (selection == 0) {
             System.out.println("0 - closing program");
             System.exit(0);
+
         } else if (selection == 1) {
             System.out.println("1 - create a new paper:");
             scanPaper(db);
@@ -93,11 +95,45 @@ public class PaperManager {
         } else if (selection == 6) {
             System.out.println("6 - get a statistical analysis:");
             analyze(db);
+
         } else if (selection == 7) {
             System.out.println("7 - sort the papers:");
             sortMenu(db);
+
+        } else if (selection == 8) {
+            System.out.println("8 - list the references of a paper:");
+            System.out.println("From which paper do you want to see the references?");
+            System.out.printf("----------------------------------------------------------\n");
+            System.out.printf("%-5s %-25s  %-25s\n", "Nr", "Author", "Title");
+            System.out.printf("-------------------------------  -------------------------\n");
+            for (int i = 0; i < db.free; i++) {
+                System.out.printf("( %d ) ", i);
+                printPaperShort(db, i);
+            }
+            int choice = sc.nextInt();
+
+            boolean wrongChoice = true;
+            while (wrongChoice) {
+                //does paper exist
+                if (db.paperDB[choice] == null) {
+                    System.out.println("Paper doesn't exist! Please choose a paper, then a reference:");
+                    choice = sc.nextInt();
+                } else {
+                    wrongChoice = false;
+                }
+            }
+
+            while (db.paperDB[choice] == null) {
+                System.out.println("Paper doesn't exist! Please choose a paper, then a reference:");
+                choice = sc.nextInt();
+            }
+            listReferences(db.paperDB[choice].reference);
+            if(db.paperDB[choice].reference == null){
+                System.out.println("The paper has no references.");
+            }
+
         } else {
-            System.err.println("There was an error in the menu (line 84)");
+            System.err.println("There was an error in the menu.");
             System.exit(0);
         }
 
@@ -361,6 +397,19 @@ public class PaperManager {
     /* ------- L I N K   P A P E R ------- */
     /* ----------------------------------- */
     public static void addReference(PaperDB db) {
+        /*
+        Notizen an mich, sonst blicke ich da niemals durch...
+        Außerdem habe ich mir das Tutorium "Trees" (und besonders BSTPhoneBook) zur Hilfe und zum Verständnis dazugezogen
+
+            Jedes neu erstelle Paper enthält eine (leere) RefNode reference.
+            Eine RefNode besteht aus einem paper, und einer RefNode left/right (um sie zu sortieren)
+
+            Wir wählen zuerst ein Paper zum bearbeiten aus unserer db aus. (db.paperDB[mainPaper])
+            Dann lassen wir die reference auf das paper db.paperDB[refPaper] zeigen
+
+            Dann füge ich diese neue RefNode zu dem mainPaper Reference hinzu (db.paperDB.[mainPaper].reference)
+         */
+
         System.out.println("select paper, then reference:");
 
         System.out.printf("----------------------------------------------------------\n");
@@ -373,9 +422,57 @@ public class PaperManager {
         int mainPaper = sc.nextInt();
         int refPaper = sc.nextInt();
 
-        RefNode nN = new RefNode();
-        //nN.paper = db.paperDB[mainPaper];
+        boolean wrongChoice = true;
+        while (wrongChoice) {
+            //does paper exist
+            if (db.paperDB[mainPaper] == null || db.paperDB[refPaper] == null) {
+                System.out.println("Paper doesn't exist! Please choose a paper, then a reference:");
+                mainPaper = sc.nextInt();
+                refPaper = sc.nextInt();
+            }
 
+            //does paper reference itself
+            else if (mainPaper == refPaper) {
+                System.out.println("A paper can't reference itself! Please choose a paper, then a reference:");
+                mainPaper = sc.nextInt();
+                refPaper = sc.nextInt();
+            } else {
+                wrongChoice = false;
+            }
+        }
+
+        RefNode nN = new RefNode();
+        //db.paperDB[mainPaper].reference = insert(db.paperDB[mainPaper].reference, copyPaper(db.paperDB[refPaper], nN.paper));
+        db.paperDB[mainPaper].reference = insert(db.paperDB[mainPaper].reference, db.paperDB[refPaper]);
+    }
+
+    public static Paper copyPaper(Paper mainPaper, Paper refPaper) {
+        refPaper.author = mainPaper.author;
+        refPaper.title = mainPaper.title;
+        refPaper.publicationDate.y = mainPaper.publicationDate.y;
+        refPaper.publicationDate.m = mainPaper.publicationDate.m;
+        refPaper.publicationDate.d = mainPaper.publicationDate.d;
+        refPaper.pages = mainPaper.pages;
+
+        System.out.println("copied paper!");
+        return refPaper;
+    }
+
+    public static RefNode insert(RefNode bst, Paper paper) {
+        if (bst == null) {
+            RefNode nN = new RefNode();
+            nN.paper = paper;
+            return nN;
+        }
+
+        if (stringComparator(bst.paper.author, paper.author) > 0) //passes paper at array[j/i]
+            bst.left = insert(bst.left, paper);
+        else if (stringComparator(bst.paper.author, paper.author) < 0)
+            bst.right = insert(bst.right, paper);
+        else
+            System.out.println("Paper is already a reference!");
+
+        return bst;
     }
 
     /* --------------------------------------- */
@@ -593,4 +690,16 @@ public class PaperManager {
         return p.publicationDate.y * 10000 + p.publicationDate.m * 100 + p.publicationDate.d;
     }
 
+    /* --------------------------------------------- */
+    /* ------- L I S T   R E F E R E N C E S ------- */
+    /* --------------------------------------------- */
+    public static void listReferences(RefNode reference) {
+        if (reference == null) {
+            return;
+        }
+
+        listReferences(reference.left);
+        System.out.printf("%-25.25s  %25.25s\n", reference.paper.author, reference.paper.title);
+        listReferences(reference.right);
+    }
 }
