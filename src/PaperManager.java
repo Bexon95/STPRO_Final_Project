@@ -6,6 +6,7 @@ class Paper {
     Date publicationDate = new Date();
     int pages;
     RefNode reference = null;
+    int refAmount = 0;
 }
 
 class Date {
@@ -28,9 +29,6 @@ public class PaperManager {
     public static void main(String[] args) {
         PaperDB db = new PaperDB();
 
-        System.out.println("Welcome to the Literature Management Tool!");
-        System.out.println("Choose what you want to do:");
-
         add(db, createPaper("Brunnbauer", "b-title", 2014, 5, 30, 2));
         add(db, createPaper("Cerny", "a-title", 2020, 3, 13, 3));
         add(db, createPaper("Demetz", "r-title", 1990, 1, 7, 88));
@@ -40,6 +38,9 @@ public class PaperManager {
         add(db, createPaper("Brunnbauer", "l-title", 2004, 8, 17, 2));
         add(db, createPaper("Benjamin Alexander Buisman Aguilar", "Coding for Dummies, by Dummies", 2004, 8, 17, 1232));
         add(db, createPaper("Claude Cohen-Tinnoudji", "Why longer titles don't make you sound smart, and other myths to be discovered", 2004, 8, 17, 2));
+
+        System.out.println("Welcome to the Literature Management Tool!");
+        System.out.println("Choose what you want to do:");
 
         while (true) {
             menu(db);
@@ -119,6 +120,13 @@ public class PaperManager {
         sc.nextLine(); //it catches the newline (\n) of me pressing "Enter".
         System.out.println("Please enter the author of the paper:");
         String author = sc.nextLine();
+
+        /*
+        Ich weiß, wir sollen die Eingabe des Namens validieren, aber hier eine amüsante Website warum das eine schlechte Idee ist:
+            Falsehoods Programmers Believe About Names | Kalzumeus Software
+            https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/
+        */
+
         System.out.println("Please enter the title of the paper:");
         String title = sc.nextLine();
 
@@ -351,7 +359,7 @@ public class PaperManager {
     }
 
     public static void printPaperShort(PaperDB db, int idx) {
-        System.out.printf("%-25.25s  %25.25s\n", db.paperDB[idx].author, db.paperDB[idx].title);
+        System.out.printf("%-25.25s  %-25.25s\n", db.paperDB[idx].author, db.paperDB[idx].title);
     }
 
     public static void printPaperDetail(PaperDB db, int idx) {
@@ -412,8 +420,10 @@ public class PaperManager {
                 wrongChoice = false;
             }
         }
+        System.out.printf("Adding %s%d to %s%d",    db.paperDB[refPaper].author, db.paperDB[refPaper].publicationDate.y,
+                                                    db.paperDB[mainPaper].author, db.paperDB[mainPaper].publicationDate.y);
+        db.paperDB[refPaper].refAmount++;
 
-        RefNode nN = new RefNode();
         db.paperDB[mainPaper].reference = insert(db.paperDB[mainPaper].reference, db.paperDB[refPaper]);
     }
 
@@ -652,7 +662,7 @@ public class PaperManager {
     /* --------------------------------------------- */
     /* ------- L I S T   R E F E R E N C E S ------- */
     /* --------------------------------------------- */
-    public static void listReferences(PaperDB db){
+    public static void listReferences(PaperDB db) {
         System.out.println("From which paper do you want to see the references?");
         System.out.printf("----------------------------------------------------------\n");
         System.out.printf("%-5s %-25s  %-25s\n", "Nr", "Author", "Title");
@@ -679,7 +689,7 @@ public class PaperManager {
             choice = sc.nextInt();
         }
         printReferences(db.paperDB[choice].reference);
-        if(db.paperDB[choice].reference == null){
+        if (db.paperDB[choice].reference == null) {
             System.out.println("The paper has no references.");
         }
     }
@@ -690,7 +700,7 @@ public class PaperManager {
         }
 
         printReferences(reference.left);
-        System.out.printf("%-25.25s  %25.25s\n", reference.paper.author, reference.paper.title);
+        System.out.printf("%-25.25s  %-25.25s\n", reference.paper.author, reference.paper.title);
         printReferences(reference.right);
     }
 }
