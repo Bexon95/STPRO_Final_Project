@@ -420,8 +420,8 @@ public class PaperManager {
                 wrongChoice = false;
             }
         }
-        System.out.printf("Adding %s%d to %s%d",    db.paperDB[refPaper].author, db.paperDB[refPaper].publicationDate.y,
-                                                    db.paperDB[mainPaper].author, db.paperDB[mainPaper].publicationDate.y);
+        System.out.printf("Adding %s%d to %s%d", db.paperDB[refPaper].author, db.paperDB[refPaper].publicationDate.y,
+                db.paperDB[mainPaper].author, db.paperDB[mainPaper].publicationDate.y);
         db.paperDB[refPaper].refAmount++;
 
         db.paperDB[mainPaper].reference = insert(db.paperDB[mainPaper].reference, db.paperDB[refPaper]);
@@ -544,11 +544,28 @@ public class PaperManager {
     /* ------- A N A L Y Z E ------- */
     /* ----------------------------- */
     public static void analyze(PaperDB db) {
-        int numberPapers;
-        int avgPages;
-        //int avgReferences;
-        int mostReferences;
-        String mostRefPaper;
+        int numberPapers = db.free - 1;
+        int avgPages = 0;
+        int avgReferences = 0;
+        int mostReferences = 0;
+
+        for (int i = 0; i < numberPapers; i++) {
+            avgPages += db.paperDB[i].pages;
+            avgReferences += db.paperDB[i].refAmount;
+            if (db.paperDB[i].refAmount > db.paperDB[mostReferences].refAmount) {
+                mostReferences = i;
+            }
+
+        }
+        avgPages /= numberPapers;
+        avgReferences /= numberPapers;
+
+        System.out.println("---------- A N A L Y S I S ----------");
+        System.out.printf("There are a total of %d publications.\n", numberPapers);
+        System.out.printf("The average paper has %d pages.\n", avgPages);
+        System.out.printf("The average paper references %d other papers.\n", avgReferences);
+        System.out.printf("The most a paper was referenced was %d time(s).\n", db.paperDB[mostReferences].refAmount);
+        System.out.printf("The most referenced paper is %s by %s.\n", db.paperDB[mostReferences].title, db.paperDB[mostReferences].author);
     }
 
     /* --------------------------------- */
