@@ -260,6 +260,9 @@ public class PaperManager {
                 db.paperDB[i] = db.paperDB[i + 1];
             }
             i++;
+            if((i + 1) == db.paperDB.length){
+                break;
+            }
         }
         db.paperDB[i] = null;
         db.free--; //one free space is added back
